@@ -24,7 +24,7 @@ class Client
     #[ORM\Column(length: 255)]
     private ?string $phone = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $mail = null;
 
     #[ORM\OneToMany(mappedBy: 'client', targetEntity: Commande::class)]
