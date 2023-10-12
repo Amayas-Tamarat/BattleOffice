@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Repository\ProduitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,12 +13,12 @@ class LandingPageController extends AbstractController
 {
 
     #[Route('/', name: 'landing_page')]
-    public function index(Request $request) :Response
+    public function index(Request $request, ProduitRepository $produitRepository) :Response
     {
         //Your code here
-
+        $produits = $produitRepository->findAll();
         return $this->render('landing_page/index_new.html.twig', [
-
+            'produits' => $produits,
         ]);
     }
 
