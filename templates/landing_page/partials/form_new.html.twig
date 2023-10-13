@@ -10,63 +10,64 @@
 </style>
 
 {# Etape 2 #}
+
+{{ form_start(formCommande) }}
+
 <div class="card step_2">
     <div class="card-content">
         <span class="card-title color_product_primary center-align">Étape 2</span>
         <p class="h6 center-align">Remplissez ce formulaire</p>
         <div class="form-wrapper">
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.client.name) }}
                 <label>Prénom</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.client.last_name) }}
                 <label>Nom</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.shippingAdress.adress) }}
                 <label>Adresse</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.shippingAdress.complement) }}
                 <label>Complément adr.</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.shippingAdress.ville) }}
                 <label>Ville</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.shippingAdress.postalCode) }}
                 <label>Code postal</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <select>
-                    <option>France</option>
-                </select>
+                {{ form_widget(formCommande.shippingAdress.country) }}
                 <label>Pays</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.client.phone) }}
                 <label>Téléphone</label>
                 <div class="form-error"></div>
             </div>
             <div class="input-field">
-                <input type="text">
+                {{ form_widget(formCommande.client.mail) }}
                 <label>Email</label>
                 <div class="form-error"></div>
             </div>
-            <div class="input-field">
-                <input type="text">
+            {# <div class="input-field">
+                {{ form_widget(formCommande.client.name) }}
                 <label>Confirmation email</label>
                 <div class="form-error"></div>
-            </div>
+            </div> #}
         </div>
     </div>
     <ul class="collapsible">
@@ -119,6 +120,10 @@
         </li>
     </ul>
 </div>
+
+{{ form_end(formCommande) }}
+
+
 {# Etape 3 #}
 <div class="card step_3">
     <div class="card-content">

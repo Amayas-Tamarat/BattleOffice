@@ -3,10 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Adress;
+use App\Entity\Client;
+use App\Entity\Commande;
+use App\Entity\Produit;
 use App\Form\AdressType;
+use App\Form\ClientType;
+use App\Form\CommandeType;
+use App\Form\ProduitType;
 use App\Repository\ClientRepository;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,13 +23,44 @@ class LandingPageController extends AbstractController
 {
 
     #[Route('/', name: 'landing_page')]
-    public function index(Request $request, ProduitRepository $produitRepository) :Response
+    public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager) :Response
     {
         //Your code here
-        
+       
         $produits = $produitRepository->findAll();
+
+        $commande = new Commande();
+        $formCommande = $this->createForm(CommandeType::class, $commande);
+        $formCommande->handleRequest($request);
+        
+
+        $client = $commande->getClient();
+        $adress = $commande->getShippingAdress();
+        // dd($client);
+
+        if ($formCommande->isSubmitted() && $formCommande->isValid()) {
+
+        $selectedProductID = $request->request->get('selected_product_id');
+        $produit = $produitRepository->find($selectedProductID);
+
+        $commande->setProduit($produit);
+
+        dd($commande);
+        $entityManager->persist($client);
+        $entityManager->persist($adress);
+        
+        $entityManager->flush();
+        // dd($client);
+        
+
+        $entityManager->persist($commande);
+        $entityManager->flush();
+        }
+
+        
         return $this->render('landing_page/index_new.html.twig', [
             'produits' => $produits,
+            'formCommande' => $formCommande
         ]);
     }
 
@@ -48,19 +86,34 @@ class LandingPageController extends AbstractController
     }
 
 
-    #[Route('/test', name: 'test')]
-    public function test(Request $request, EntityManagerInterface $entityManager) : Response
-    {
-        $adress = new Adress();
-        $formAdress = $this->createForm(AdressType::class, $adress);
-        $formAdress->handleRequest($request);
-        // dd($adress);
+    // #[Route('/test', name: 'test')]
+    // public function test(Request $request, EntityManagerInterface $entityManager) : Response
+    // {
+    //     $commande = new Commande();
+    //     $formCommande = $this->createForm(CommandeType::class, $commande);
+    //     $formCommande->handleRequest($request);
+        
 
-        $entityManager->persist($adress);
-        $entityManager->flush();
+    //     $client = $commande->getClient();
+    //     $adress = $commande->getShippingAdress();
+    //     $commande->setProduit($produit);
+    //     // dd($client);
 
-        return $this->render('landing_page/test.html.twig', [
-            'formAdress' => $formAdress
-        ]);
-    }
+    //     if ($formCommande->isSubmitted() && $formCommande->isValid()) {
+
+    //     $entityManager->persist($client);
+    //     $entityManager->persist($adress);
+        
+    //     $entityManager->flush();
+    //     // dd($client);
+        
+
+    //     $entityManager->persist($commande);
+    //     $entityManager->flush();
+    //     }
+
+    //     return $this->render('landing_page/test.html.twig', [
+    //         'formCommande' => $formCommande
+    //     ]);
+    // }
 }
