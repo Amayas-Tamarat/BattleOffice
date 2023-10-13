@@ -41,7 +41,6 @@ class LandingPageController extends AbstractController
         return $this->render('emails/confirmation.html.twig', [
             'client' => $client,
             'product' => $product,
-
         ]);
     }
 }
