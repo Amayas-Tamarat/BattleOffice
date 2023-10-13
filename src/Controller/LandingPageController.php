@@ -2,10 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Adress;
+use App\Form\AdressType;
 use App\Repository\ClientRepository;
 use App\Repository\ProduitRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +19,7 @@ class LandingPageController extends AbstractController
     public function index(Request $request, ProduitRepository $produitRepository) :Response
     {
         //Your code here
+        
         $produits = $produitRepository->findAll();
         return $this->render('landing_page/index_new.html.twig', [
             'produits' => $produits,
@@ -41,6 +44,23 @@ class LandingPageController extends AbstractController
         return $this->render('emails/confirmation.html.twig', [
             'client' => $client,
             'product' => $product,
+        ]);
+    }
+
+
+    #[Route('/test', name: 'test')]
+    public function test(Request $request, EntityManagerInterface $entityManager) : Response
+    {
+        $adress = new Adress();
+        $formAdress = $this->createForm(AdressType::class, $adress);
+        $formAdress->handleRequest($request);
+        // dd($adress);
+
+        $entityManager->persist($adress);
+        $entityManager->flush();
+
+        return $this->render('landing_page/test.html.twig', [
+            'formAdress' => $formAdress
         ]);
     }
 }

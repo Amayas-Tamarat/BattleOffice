@@ -6,6 +6,7 @@ use App\Entity\Adress;
 use App\Entity\Country;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -44,7 +45,7 @@ class AdressType extends AbstractType
                     'class' => 'form-control',
                     'id' => 'Complément adr.',
                     'name' => 'Complément adr.',
-                    'required' => true,
+                    'required' => false,
                     ]
                 ])
             ->add('country', EntityType::class, [
@@ -57,6 +58,7 @@ class AdressType extends AbstractType
                     'class' => 'input-field',
                     ]
                 ])
+                ->add('submit', SubmitType::class)
         ;
     }
 
