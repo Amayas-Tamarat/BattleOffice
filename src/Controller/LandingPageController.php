@@ -2,33 +2,47 @@
 
 namespace App\Controller;
 
-use App\Entity\Adress;
 use App\Entity\Client;
 use App\Entity\Commande;
 use App\Entity\Payment;
-use App\Entity\Produit;
-use App\Form\AdressType;
-use App\Form\ClientType;
 use App\Form\CommandeType;
-use App\Form\ProduitType;
 use App\Repository\ClientRepository;
 use App\Repository\PaymentMethodRepository;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\Mapping\Id;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use GuzzleHttp\Client as GuzzleHttpClient;
 
 class LandingPageController extends AbstractController
 {
 
     #[Route('/', name: 'landing_page')]
-    public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager, PaymentMethodRepository $paymentMethodRepository) :Response
+    public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager, PaymentMethodRepository $paymentMethodRepository): Response
     {
         //Your code here
-       
+
+        $guzzleclient  =  new  GuzzleHttpClient([
+            'base_uri'  =>  'https://api-commerce.simplon-roanne.com/',
+            'timeout'   =>  2.0,
+        ]);
+
+        $token = 'mJxTXVXMfRzLg6ZdhUhM4F6Eutcm1ZiPk4fNmvBMxyNR4ciRsc8v0hOmlzA0vTaX';
+
+        // Créez une requête avec l'en-tête d'autorisation
+        $response = $guzzleclient->request('POST', [
+            'headers' => [
+                'Authorization' => 'Bearer' . $token,
+                // Vous pouvez également ajouter d'autres en-têtes personnalisés si nécessaire
+            ],
+        ]);
+
+
+
+
+
         $produits = $produitRepository->findAll();
         $paymentMethods = $paymentMethodRepository->findAll();
 
@@ -37,7 +51,7 @@ class LandingPageController extends AbstractController
         $formCommande->handleRequest($request);
 
         $payment = new Payment();
-        
+
 
         $client = $commande->getClient();
         $adress = $commande->getShippingAdress();
@@ -45,33 +59,33 @@ class LandingPageController extends AbstractController
 
         if ($formCommande->isSubmitted() && $formCommande->isValid()) {
 
-        $selectedProductID = $request->request->get('selected_product_id');
-        $produit = $produitRepository->find($selectedProductID);
+            $selectedProductID = $request->request->get('selected_product_id');
+            $produit = $produitRepository->find($selectedProductID);
 
-        $selectedPaymentMethodName = $request->request->get('selected_payment_method_name');
-        $paymentMethod = $paymentMethodRepository->findOneBy(['name' => $selectedPaymentMethodName]);
+            $selectedPaymentMethodName = $request->request->get('selected_payment_method_name');
+            $paymentMethod = $paymentMethodRepository->findOneBy(['name' => $selectedPaymentMethodName]);
 
-        $commande->setProduit($produit);
-        $payment->setPaymentMethod($paymentMethod);
-        $payment->setBillingAdress($adress);
-        $commande->setPayment($payment);
+            $commande->setProduit($produit);
+            $payment->setPaymentMethod($paymentMethod);
+            $payment->setBillingAdress($adress);
+            $commande->setPayment($payment);
 
-        // $commande->setPayment()
+            // $commande->setPayment()
 
-        // dd($commande);
-        // $entityManager->persist($client);
-        // $entityManager->persist($adress);
-        $entityManager->persist($payment);
-        
-        $entityManager->flush();
-        // dd($client);
-        
+            // dd($commande);
+            // $entityManager->persist($client);
+            // $entityManager->persist($adress);
+            $entityManager->persist($payment);
 
-        $entityManager->persist($commande);
-        $entityManager->flush();
+            $entityManager->flush();
+            // dd($client);
+
+
+            $entityManager->persist($commande);
+            $entityManager->flush();
         }
 
-        
+
         return $this->render('landing_page/index_new.html.twig', [
             'produits' => $produits,
             'formCommande' => $formCommande,
@@ -82,8 +96,7 @@ class LandingPageController extends AbstractController
     #[Route('/confirmation', name: 'confirmation')]
     public function confirmation()
     {
-        return $this->render('landing_page/confirmation.html.twig', [
-        ]);
+        return $this->render('landing_page/confirmation.html.twig', []);
     }
 
     #[Route('/emails/{id}', name: 'emails')]
@@ -92,8 +105,8 @@ class LandingPageController extends AbstractController
 
 
         // A CHANGER QUAND ON AURA FINI LE FORM
-        $client = $clientRepository->findOneBy(array ('id'=>1));
-        $product = $produitRepository->findOneBy(array ('id'=>1));
+        $client = $clientRepository->findOneBy(array('id' => 1));
+        $product = $produitRepository->findOneBy(array('id' => 1));
         return $this->render('emails/confirmation.html.twig', [
             'client' => $client,
             'product' => $product,
@@ -107,7 +120,7 @@ class LandingPageController extends AbstractController
     //     $commande = new Commande();
     //     $formCommande = $this->createForm(CommandeType::class, $commande);
     //     $formCommande->handleRequest($request);
-        
+
 
     //     $client = $commande->getClient();
     //     $adress = $commande->getShippingAdress();
@@ -118,10 +131,10 @@ class LandingPageController extends AbstractController
 
     //     $entityManager->persist($client);
     //     $entityManager->persist($adress);
-        
+
     //     $entityManager->flush();
     //     // dd($client);
-        
+
 
     //     $entityManager->persist($commande);
     //     $entityManager->flush();
