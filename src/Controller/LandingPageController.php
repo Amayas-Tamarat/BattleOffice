@@ -11,6 +11,7 @@ use App\Form\ClientType;
 use App\Form\CommandeType;
 use App\Form\ProduitType;
 use App\Repository\ClientRepository;
+use App\Repository\PaymentMethodRepository;
 use App\Repository\ProduitRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\Id;
@@ -23,11 +24,12 @@ class LandingPageController extends AbstractController
 {
 
     #[Route('/', name: 'landing_page')]
-    public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager) :Response
+    public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager, PaymentMethodRepository $paymentMethodRepository) :Response
     {
         //Your code here
        
         $produits = $produitRepository->findAll();
+        $paymentMethods = $paymentMethodRepository->findAll();
 
         $commande = new Commande();
         $formCommande = $this->createForm(CommandeType::class, $commande);
@@ -60,7 +62,8 @@ class LandingPageController extends AbstractController
         
         return $this->render('landing_page/index_new.html.twig', [
             'produits' => $produits,
-            'formCommande' => $formCommande
+            'formCommande' => $formCommande,
+            'paymentMethods' => $paymentMethods,
         ]);
     }
 

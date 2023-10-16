@@ -21,11 +21,11 @@ class CommandeType extends AbstractType
             //Objet imbriquer
             ->add('shippingAdress', AdressType::class)
             //Objet choice type
-            ->add('produit', EntityType::class, [
-                'class' => Produit::class,
-                'choice_label' => 'name',
-                'expanded' => true,
-                ])
+            // ->add('produit', EntityType::class, [
+            //     'class' => Produit::class,
+            //     'choice_label' => 'name',
+            //     'expanded' => true,
+            //     ])
         ;
     }
 
