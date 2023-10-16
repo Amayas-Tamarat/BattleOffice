@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Adress;
 use App\Entity\Client;
 use App\Entity\Commande;
+use App\Entity\Payment;
 use App\Entity\Produit;
 use App\Form\AdressType;
 use App\Form\ClientType;
@@ -34,6 +35,8 @@ class LandingPageController extends AbstractController
         $commande = new Commande();
         $formCommande = $this->createForm(CommandeType::class, $commande);
         $formCommande->handleRequest($request);
+
+        $payment = new Payment();
         
 
         $client = $commande->getClient();
@@ -45,11 +48,20 @@ class LandingPageController extends AbstractController
         $selectedProductID = $request->request->get('selected_product_id');
         $produit = $produitRepository->find($selectedProductID);
 
+        $selectedPaymentMethodName = $request->request->get('selected_payment_method_name');
+        $paymentMethod = $paymentMethodRepository->findOneBy(['name' => $selectedPaymentMethodName]);
+
         $commande->setProduit($produit);
+        $payment->setPaymentMethod($paymentMethod);
+        $payment->setBillingAdress($adress);
+        $commande->setPayment($payment);
+
+        // $commande->setPayment()
 
         dd($commande);
-        $entityManager->persist($client);
-        $entityManager->persist($adress);
+        // $entityManager->persist($client);
+        // $entityManager->persist($adress);
+        $entityManager->persist($payment);
         
         $entityManager->flush();
         // dd($client);

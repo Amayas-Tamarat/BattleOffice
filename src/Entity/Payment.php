@@ -26,6 +26,11 @@ class Payment
     #[ORM\JoinColumn(nullable: false)]
     private ?PaymentMethod $paymentMethod = null;
 
+    public function __construct()
+    {
+        $this->isAccepted = false;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

@@ -70,7 +70,7 @@
             </div> #}
         </div>
     </div>
-    <ul class="collapsible">
+    {# <ul class="collapsible">
         <li>
             <div class="collapsible-header"><i class="material-icons">markunread_mailbox</i>Adresse de livraison différente ?</div>
             <div class="collapsible-body">
@@ -118,7 +118,7 @@
                 </div>
             </div>
         </li>
-    </ul>
+    </ul> #}
 </div>
 
 {{ form_end(formCommande) }}
@@ -135,7 +135,7 @@
                 <div class="collapsible-body card-form">
                     <div class="row">
                         <div class="center-align">
-                            <button type="submit" name="selected_payment_method_id" value="{{ paymentMethods.id[0] }}" class="btn-large btn-block waves-effect waves-light">Continuer</button>
+                            <button type="submit" name="selected_payment_method_name" value="lpmonetico" class="btn-large btn-block waves-effect waves-light">Continuer</button>
                             <p>J'accepte les <a href="https://feelwellshop.com/fr/conditions-generales-de-ventes" target="_blank">conditions générales de vente</a></p>
                             <img class="responsive-img monetico" src="assets/images/paiement-securise-stripe.jpeg" alt="Stripe protège vos achats">
                         </div>
@@ -147,7 +147,7 @@
                 <div class="collapsible-body">
                     <div class="row">
                         <div class="center-align">
-                            <button type="submit" name="selected_payment_method_id" value="{{ paymentMethods.id[1] }}" class="btn-large btn-block waves-effect waves-light">Continuer sur PayPal</button>
+                            <button type="submit" name="selected_payment_method_name" value="lppaypal" class="btn-large btn-block waves-effect waves-light">Continuer sur PayPal</button>
                             <p>J'accepte les <a href="https://feelwellshop.com/fr/conditions-generales-de-ventes" target="_blank">conditions générales de vente</a></p>
                         </div>
                     </div>
