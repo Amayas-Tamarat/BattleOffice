@@ -58,7 +58,7 @@ class LandingPageController extends AbstractController
 
         // $commande->setPayment()
 
-        dd($commande);
+        // dd($commande);
         // $entityManager->persist($client);
         // $entityManager->persist($adress);
         $entityManager->persist($payment);
