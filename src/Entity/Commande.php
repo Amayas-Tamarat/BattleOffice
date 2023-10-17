@@ -31,6 +31,9 @@ class Commande
     #[ORM\JoinColumn(nullable: false)]
     private ?Produit $produit = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?int $apiCommandeId = null;
+
     public function __construct()
     {
         $this->creationDate = new DateTimeImmutable();
@@ -97,6 +100,18 @@ class Commande
     public function setProduit(?Produit $produit): static
     {
         $this->produit = $produit;
+
+        return $this;
+    }
+
+    public function getApiCommandeId(): ?int
+    {
+        return $this->apiCommandeId;
+    }
+
+    public function setApiCommandeId(?int $apiCommandeId): static
+    {
+        $this->apiCommandeId = $apiCommandeId;
 
         return $this;
     }

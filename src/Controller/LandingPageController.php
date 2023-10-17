@@ -133,6 +133,8 @@ class LandingPageController extends AbstractController
                 // Récupérez la réponse de l'API
                 $statusCode = $response->getStatusCode();
                 $apiResponse = $response->getBody()->getContents();
+                $apiResponse = json_decode($apiResponse, true);
+                $apiCommandeId = $apiResponse['order_id'];
             
                 // Traitez la réponse de l'API comme nécessaire
                 // ...
@@ -140,6 +142,12 @@ class LandingPageController extends AbstractController
                 // Gérez les erreurs, par exemple, en affichant un message d'erreur
                 echo 'Erreur lors de l\'appel à l\'API : ' . $e->getMessage();
             }
+
+            // dd($apiCommandeId);
+
+            $commande->setApiCommandeId($apiCommandeId);
+            // dd($commande);
+
 
 
             $entityManager->persist($commande);
