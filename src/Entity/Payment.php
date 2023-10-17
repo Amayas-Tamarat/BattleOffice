@@ -13,9 +13,6 @@ class Payment
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?bool $isAccepted = null;
-
     #[ORM\OneToOne(mappedBy: 'payment', cascade: ['persist', 'remove'])]
     private ?Commande $commande = null;
 
@@ -26,26 +23,17 @@ class Payment
     #[ORM\JoinColumn(nullable: false)]
     private ?PaymentMethod $paymentMethod = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $status = null;
+
     public function __construct()
     {
-        $this->isAccepted = false;
+        $this->status = "WAITING";
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function isIsAccepted(): ?bool
-    {
-        return $this->isAccepted;
-    }
-
-    public function setIsAccepted(bool $isAccepted): static
-    {
-        $this->isAccepted = $isAccepted;
-
-        return $this;
     }
 
     public function getCommande(): ?Commande
@@ -90,6 +78,18 @@ class Payment
     public function setPaymentMethod(?PaymentMethod $paymentMethod): static
     {
         $this->paymentMethod = $paymentMethod;
+
+        return $this;
+    }
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }

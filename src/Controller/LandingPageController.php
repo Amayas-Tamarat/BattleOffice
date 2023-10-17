@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use GuzzleHttp\Client as GuzzleHttpClient;
+use GuzzleHttp\Psr7\Utils;
 
 class LandingPageController extends AbstractController
 {
@@ -23,24 +24,6 @@ class LandingPageController extends AbstractController
     public function index(Request $request, ProduitRepository $produitRepository, EntityManagerInterface $entityManager, PaymentMethodRepository $paymentMethodRepository): Response
     {
         //Your code here
-
-        $guzzleclient  =  new  GuzzleHttpClient([
-            'base_uri'  =>  'https://api-commerce.simplon-roanne.com/',
-            'timeout'   =>  2.0,
-        ]);
-
-        $token = 'mJxTXVXMfRzLg6ZdhUhM4F6Eutcm1ZiPk4fNmvBMxyNR4ciRsc8v0hOmlzA0vTaX';
-
-        // Créez une requête avec l'en-tête d'autorisation
-        $response = $guzzleclient->request('POST', [
-            'headers' => [
-                'Authorization' => 'Bearer' . $token,
-                // Vous pouvez également ajouter d'autres en-têtes personnalisés si nécessaire
-            ],
-        ]);
-
-
-
 
 
         $produits = $produitRepository->findAll();
@@ -73,12 +56,90 @@ class LandingPageController extends AbstractController
             // $commande->setPayment()
 
             // dd($commande);
-            // $entityManager->persist($client);
-            // $entityManager->persist($adress);
+            $entityManager->persist($client);
+            $entityManager->persist($adress);
             $entityManager->persist($payment);
 
             $entityManager->flush();
             // dd($client);
+
+            $commandeData = [
+                'id' => $commande->getId(),
+                'product' => $commande->getProduit()->getName(),
+                'payment_method' => $commande->getPayment()->getPaymentMethod()->getName(),
+                'status' => $commande->getPayment()->getStatus(),
+                'client' => [
+                    'firstname' => $commande->getClient()->getName(),
+                    'lastname' => $commande->getClient()->getLastName(),
+                    'email' => $commande->getClient()->getMail(),
+                ],
+                'addresses' => [
+                    'billing' => [
+                        'address_line1' => $commande->getShippingAdress()->getAdress(),
+                        'address_line2' => $commande->getShippingAdress()->getComplement(),
+                        'city' => $commande->getShippingAdress()->getVille(),
+                        'zipcode' => strval($commande->getShippingAdress()->getPostalCode()),
+                        'country' => $commande->getShippingAdress()->getCountry()->getName(),
+                        'phone' => $commande->getClient()->getPhone(),
+                    ],
+                    'shipping' => [
+                        'address_line1' => $commande->getShippingAdress()->getAdress(),
+                        'address_line2' => $commande->getShippingAdress()->getComplement(),
+                        'city' => $commande->getShippingAdress()->getVille(),
+                        'zipcode' => strval($commande->getShippingAdress()->getPostalCode()),
+                        'country' => $commande->getShippingAdress()->getCountry()->getName(),
+                        'phone' => $commande->getClient()->getPhone(),
+                    ],
+                ],
+            ];
+
+            $order = ['order'=>$commandeData];
+
+            // dd($commandeData);
+
+            $guzzleclient  =  new  GuzzleHttpClient([
+                'base_uri'  =>  'https://api-commerce.simplon-roanne.com/',
+                'verify' => false,
+                'timeout'   =>  2.0,
+            ]);
+    
+            $token = 'mJxTXVXMfRzLg6ZdhUhM4F6Eutcm1ZiPk4fNmvBMxyNR4ciRsc8v0hOmlzA0vTaX';
+    
+            // Créez une requête avec l'en-tête d'autorisation
+            try {
+                // Préparez le contenu JSON sous forme de fichier
+                $jsonData = $order;
+            
+                $jsonContent = json_encode($jsonData);
+            
+                $stream = Utils::streamFor($jsonContent);
+            
+                // $multipart = [
+                //     [
+                //         'name' => 'json_file',
+                //         'contents' => $stream,
+                //         'filename' => 'data.json',
+                //     ],
+                // ];
+            
+                $response = $guzzleclient->post('/order', [
+                    'headers' => [
+                        'Authorization' => 'Bearer ' . $token, // Add the Bearer token to the request headers
+                        'Content-Type' => 'application/json', // Set the Content-Type header
+                    ],
+                    'body' => $jsonContent, // Set the JSON data as the request body
+                ]);
+            
+                // Récupérez la réponse de l'API
+                $statusCode = $response->getStatusCode();
+                $apiResponse = $response->getBody()->getContents();
+            
+                // Traitez la réponse de l'API comme nécessaire
+                // ...
+            } catch (\Exception $e) {
+                // Gérez les erreurs, par exemple, en affichant un message d'erreur
+                echo 'Erreur lors de l\'appel à l\'API : ' . $e->getMessage();
+            }
 
 
             $entityManager->persist($commande);
