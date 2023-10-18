@@ -93,7 +93,7 @@ class LandingPageController extends AbstractController
                 ],
             ];
 
-            $order = ['order'=>$commandeData];
+            $order = ['order' => $commandeData];
 
             // dd($commandeData);
 
@@ -102,18 +102,18 @@ class LandingPageController extends AbstractController
                 'verify' => false,
                 'timeout'   =>  2.0,
             ]);
-    
+
             $token = 'mJxTXVXMfRzLg6ZdhUhM4F6Eutcm1ZiPk4fNmvBMxyNR4ciRsc8v0hOmlzA0vTaX';
-    
+
             // Créez une requête avec l'en-tête d'autorisation
             try {
                 // Préparez le contenu JSON sous forme de fichier
                 $jsonData = $order;
-            
+
                 $jsonContent = json_encode($jsonData);
-            
+
                 $stream = Utils::streamFor($jsonContent);
-            
+
                 // $multipart = [
                 //     [
                 //         'name' => 'json_file',
@@ -121,7 +121,7 @@ class LandingPageController extends AbstractController
                 //         'filename' => 'data.json',
                 //     ],
                 // ];
-            
+
                 $response = $guzzleclient->post('/order', [
                     'headers' => [
                         'Authorization' => 'Bearer ' . $token, // Add the Bearer token to the request headers
@@ -129,13 +129,13 @@ class LandingPageController extends AbstractController
                     ],
                     'body' => $jsonContent, // Set the JSON data as the request body
                 ]);
-            
+
                 // Récupérez la réponse de l'API
                 $statusCode = $response->getStatusCode();
                 $apiResponse = $response->getBody()->getContents();
                 $apiResponse = json_decode($apiResponse, true);
                 $apiCommandeId = $apiResponse['order_id'];
-            
+
                 // Traitez la réponse de l'API comme nécessaire
                 // ...
             } catch (\Exception $e) {
@@ -148,10 +148,17 @@ class LandingPageController extends AbstractController
             $commande->setApiCommandeId($apiCommandeId);
             // dd($commande);
 
-
+            $productPrice = $commande->getProduit()->getPrice();
 
             $entityManager->persist($commande);
             $entityManager->flush();
+
+
+            return $this->redirectToRoute('app_stripe', [
+                'apiCommandeId' => $apiCommandeId,
+                'productPrice' => $productPrice,
+            ]);
+
         }
 
 
